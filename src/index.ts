@@ -1,21 +1,27 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 
 import puppeteer from "puppeteer";
 import fs from "fs";
 
 const app = express();
 const PORT = 3001;
-// const url = "https://github.com/JaxonScott";
 
-app.get("/screenshot/:id", async (req: Request, res: Response) => {
-  await captureScreenShot(req.params.id).then(() => {
-    res.send("screen shot taken");
-  });
+app.use(cors());
+app.use(express.json());
+
+
+app.post("/screenshot", async (req: Request, res: Response) => {
+  await captureScreenShot(req.body.screenshotUrl, req.body.name);
+  res.send("done 🚀");
 });
 
 app.listen(PORT, () => console.log(`live on port: ${PORT} `));
 
-export default async function captureScreenShot(id: string) {
+export default async function captureScreenShot(
+  screenshotUrl: string,
+  name: string
+) {
   if (!fs.existsSync("screenshots")) {
     fs.mkdirSync("screenshots");
   }
@@ -29,15 +35,16 @@ export default async function captureScreenShot(id: string) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 1080 });
 
-    await page.goto(`https://github.com/${id}`);
+    await page.goto(screenshotUrl);
+    console.log(screenshotUrl);
 
     console.log("screenshot taken");
-    await page.screenshot({ path: `screenshots/github${id}.jpeg` });
+    await page.screenshot({ path: `screenshots/${name}.jpeg` });
   } catch (error) {
     console.log(`Error: ${error}`);
   } finally {
     await browser?.close();
-    console.log(`\n🚀 Github screenshot taken`);
+    console.log(`\n🚀 screenshot taken`);
   }
 }
 
