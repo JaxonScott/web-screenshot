@@ -13,6 +13,10 @@ app.use(express.json());
 
 app.use("/images", express.static("screenshots"));
 
+app.get("/", async (req: Request, res: Response) => {
+  res.send("Hello api!");
+});
+
 app.post("/screenshot", async (req: Request, res: Response) => {
   await captureScreenShot(req.body.screenshotUrl, req.body.name);
   res.send(`http://localhost:3001/images/${req.body.name}.jpeg`);
