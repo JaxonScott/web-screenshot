@@ -10,7 +10,6 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-
 app.post("/screenshot", async (req: Request, res: Response) => {
   await captureScreenShot(req.body.screenshotUrl, req.body.name);
   res.send("done 🚀");
@@ -35,7 +34,8 @@ export default async function captureScreenShot(
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 1080 });
 
-    await page.goto(screenshotUrl);
+    //wait until there are no mor than 0 network connections for atleast 500ms to insure all imgs are loaded
+    await page.goto(screenshotUrl, { waitUntil: "networkidle0" });
     console.log(screenshotUrl);
 
     console.log("screenshot taken");
