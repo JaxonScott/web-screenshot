@@ -3,6 +3,7 @@ import cors from "cors";
 
 import puppeteer from "puppeteer";
 import fs from "fs";
+import path from "path";
 
 const app = express();
 const PORT = 3001;
@@ -10,9 +11,11 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
+app.use("/images", express.static("screenshots"));
+
 app.post("/screenshot", async (req: Request, res: Response) => {
   await captureScreenShot(req.body.screenshotUrl, req.body.name);
-  res.send("done 🚀");
+  res.send(`http://localhost:3001/images/${req.body.name}.jpeg`);
 });
 
 app.listen(PORT, () => console.log(`live on port: ${PORT} `));
